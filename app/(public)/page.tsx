@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/ui/themeToggle";
 import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { title } from "process";
 import { toast } from "sonner";
 
@@ -40,7 +41,19 @@ const features = [
 ]
 
 export default function Home() {
-    const { data: session } = authClient.useSession();
+    const { data: session, isPending } = authClient.useSession();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!isPending && session) {
+            router.replace("/courses");
+        }
+    }, [session, isPending, router]);
+
+    if (isPending || session) {
+        return null;
+    }
+
     return (
         <>
             <section className="relative py-20">

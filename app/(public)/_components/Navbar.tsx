@@ -14,7 +14,7 @@ export function Navbar() {
     const dashboardHref = role === "admin" ? "/dashboard" : "/customer";
 
     const navigationItems = [
-        { name: "Home", href: "/" },
+        ...(!session ? [{ name: "Home", href: "/" }] : []),
         { name: "Courses", href: "/courses" },
         { name: "Dashboard", href: dashboardHref },
         { name: "Contact", href: "https://mail.google.com/mail/?view=cm&fs=1&to=rechit.official@gmail.com&su=Contact&body=Hi%2C%20I%20would%20like%20to%20contact%20you." },
@@ -25,18 +25,34 @@ export function Navbar() {
     return (
         <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur-[backdrop-filter]:bg-background/60">
             <div className="container flex min-h-16 items-center mx-auto px-4 md:px-6 lg:px-8">
-                <Link href="/" className="flex items-center space-x-2 mr-4 text-lg font-bold">
+                <Link href={session ? "/courses" : "/"} className="flex items-center space-x-2 mr-4 text-lg font-bold">
                     <Image src={Logo} alt="Lemes Logo" width={32} height={32} className="inline-block mr-2" />
                     <span className="font-bold">Lemes</span>
                 </Link>
 
                 <nav className="hidden md:flex md:flex-1 md:items-center md:justify-between">
                     <div>
-                        {navigationItems.map((item) => (
-                            <Link key={item.name} href={item.href} className="mr-4">
-                                {item.name}
-                            </Link>
-                        ))}
+                        {navigationItems.map((item) => {
+                            const isExternal = item.href.startsWith("http://") || item.href.startsWith("https://") || item.href.startsWith("mailto:");
+                            if (isExternal) {
+                                return (
+                                    <a
+                                        key={item.name}
+                                        href={item.href}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mr-4"
+                                    >
+                                        {item.name}
+                                    </a>
+                                );
+                            }
+                            return (
+                                <Link key={item.name} href={item.href} className="mr-4">
+                                    {item.name}
+                                </Link>
+                            );
+                        })}
                     </div>
                     <div className="flex items-center space-x-4">
                         <ThemeToggle />
